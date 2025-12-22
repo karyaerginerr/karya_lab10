@@ -35,3 +35,8 @@ build/
 .env
 *.db
 target/
+
+/target/
+.idea/
+*.iml
+.DS_Store
