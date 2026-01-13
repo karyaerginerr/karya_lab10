@@ -41,6 +41,12 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 
+		<!-- VALIDATION (EKLENEN – HATAYI ÇÖZEN) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
 		<!-- SQLITE -->
 		<dependency>
 			<groupId>org.xerial</groupId>
@@ -61,7 +67,7 @@
 			<artifactId>spring-boot-starter-flyway</artifactId>
 		</dependency>
 
-		<!-- JWT (ÇOK ÖNEMLİ – SENDE HATA VEREN KISIM) -->
+		<!-- JWT -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
