@@ -16,6 +16,12 @@ import java.util.Collections;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
+    private final JwtService jwtService;
+
+    public JwtAuthFilter(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -25,16 +31,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
-        // Eğer Authorization header yoksa → devam et
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Şimdilik token doğrulama yok (bir sonraki adımda)
+        String token = authHeader.substring(7);
+
+        if (!jwtService.isTokenValid(token)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String username = jwtService.extractUsername(token);
+
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
-                        "user",
+                        username,
                         null,
                         Collections.emptyList()
                 );
