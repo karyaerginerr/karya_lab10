@@ -12,15 +12,30 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private static final String SECRET = "change-me-to-a-very-long-secret-key-32+chars";
+    private static final String SECRET =
+            "change-me-to-a-very-long-secret-key-32+chars";
 
     private SecretKey getKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
     }
 
+
+    public String generateToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(
+                        new Date(System.currentTimeMillis() + 1000 * 60 * 60)
+                )
+                .signWith(getKey())
+                .compact();
+    }
+
+
     public String extractUsername(String token) {
         return getAllClaims(token).getSubject();
     }
+
 
     public boolean isTokenValid(String token) {
         try {
@@ -37,13 +52,5 @@ public class JwtService {
                 .setSigningKey(getKey())
                 .parseClaimsJws(token)
                 .getBody();
-}
-    public String generateToken(String username) {
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(getKey())
-                .compact();
     }
 }
