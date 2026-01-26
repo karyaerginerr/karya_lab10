@@ -2,55 +2,40 @@ package com.example.karya_lab10.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Service
 public class JwtService {
 
-    private static final String SECRET =
-            "change-me-to-a-very-long-secret-key-32+chars";
+    // 🔐 256+ bit güvenli key
+    private static final SecretKey SECRET_KEY =
+            Keys.hmacShaKeyFor(
+                    "my-super-secret-key-my-super-secret-key".getBytes()
+            );
 
-    private SecretKey getKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
-    }
-
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 saat
 
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(
-                        new Date(System.currentTimeMillis() + 1000 * 60 * 60)
-                )
-                .signWith(getKey())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-
     public String extractUsername(String token) {
-        return getAllClaims(token).getSubject();
-    }
-
-
-    public boolean isTokenValid(String token) {
-        try {
-            Claims claims = getAllClaims(token);
-            Date exp = claims.getExpiration();
-            return exp == null || exp.after(new Date());
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private Claims getAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(getKey())
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
+
+        return claims.getSubject();
     }
 }

@@ -9,5 +9,4 @@ public class KaryaLab10Application {
 	public static void main(String[] args) {
 		SpringApplication.run(KaryaLab10Application.class, args);
 	}
-
 }
